@@ -41,8 +41,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-zinc-50">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-md p-8 space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-zinc-900">Appointment Booking</h1>
-          <p className="text-sm text-zinc-500 mt-1">Sign in to manage appointments</p>
+          <h1 className="text-2xl font-bold text-zinc-900">
+            Appointment Booking
+          </h1>
+          <p className="text-sm text-zinc-500 mt-1">
+            Sign in to manage appointments
+          </p>
         </div>
 
         {/* Demo credentials hint */}
@@ -54,7 +58,10 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-zinc-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-zinc-700 mb-1"
+            >
               Email
             </label>
             <input
@@ -68,7 +75,10 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-zinc-700 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-zinc-700 mb-1"
+            >
               Password
             </label>
             <input

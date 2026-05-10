@@ -4,7 +4,11 @@ import { findMockUser, MOCK_USERS, SESSION_COOKIE } from "@/lib/auth";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
-  if (!body || typeof body.email !== "string" || typeof body.password !== "string") {
+  if (
+    !body ||
+    typeof body.email !== "string" ||
+    typeof body.password !== "string"
+  ) {
     return Response.json({ error: "Invalid request body" }, { status: 400 });
   }
 
@@ -28,5 +32,9 @@ export async function POST(request: Request) {
     maxAge: 60 * 60 * 24 * 7, // 1 week
   });
 
-  return Response.json({ id: mockUser.id, email: mockUser.email, name: mockUser.name });
+  return Response.json({
+    id: mockUser.id,
+    email: mockUser.email,
+    name: mockUser.name,
+  });
 }

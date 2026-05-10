@@ -29,7 +29,13 @@ export default function AppointmentsPage() {
   }, []);
 
   function handleDelete(id: string) {
-    setAppointments((prev) => prev.filter((a) => a.id !== id));
+    if (id.startsWith("series:")) {
+      // Remove all occurrences that belong to this recurring rule
+      const ruleId = id.replace("series:", "");
+      setAppointments((prev) => prev.filter((a) => a.recurringRuleId !== ruleId));
+    } else {
+      setAppointments((prev) => prev.filter((a) => a.id !== id));
+    }
   }
 
   return (
@@ -38,7 +44,9 @@ export default function AppointmentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900">Appointments</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">{appointments.length} total</p>
+          <p className="text-sm text-zinc-500 mt-0.5">
+            {appointments.length} total
+          </p>
         </div>
         <Link
           href="/appointments/new"

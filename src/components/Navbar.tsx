@@ -18,14 +18,19 @@ export default function Navbar({ user }: { user: AppUser }) {
     <header className="sticky top-0 z-10 bg-white border-b border-zinc-200 shadow-sm">
       <div className="mx-auto max-w-5xl flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-6">
-          <Link href="/appointments" className="text-base font-bold text-zinc-900 hover:text-blue-600 transition-colors">
+          <Link
+            href="/appointments"
+            className="text-base font-bold text-zinc-900 hover:text-blue-600 transition-colors"
+          >
             Bookings
           </Link>
           <nav className="flex items-center gap-4 text-sm">
             <Link
               href="/appointments"
               className={`font-medium transition-colors ${
-                pathname === "/appointments" ? "text-blue-600" : "text-zinc-600 hover:text-zinc-900"
+                pathname === "/appointments"
+                  ? "text-blue-600"
+                  : "text-zinc-600 hover:text-zinc-900"
               }`}
             >
               Appointments
@@ -33,7 +38,9 @@ export default function Navbar({ user }: { user: AppUser }) {
             <Link
               href="/appointments/new"
               className={`font-medium transition-colors ${
-                pathname === "/appointments/new" ? "text-blue-600" : "text-zinc-600 hover:text-zinc-900"
+                pathname === "/appointments/new"
+                  ? "text-blue-600"
+                  : "text-zinc-600 hover:text-zinc-900"
               }`}
             >
               + New

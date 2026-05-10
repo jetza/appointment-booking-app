@@ -13,7 +13,9 @@ export default function ListView({ appointments, onDelete }: Props) {
     return (
       <div className="text-center py-16 text-zinc-400">
         <p className="text-lg">No appointments yet.</p>
-        <p className="text-sm mt-1">Create your first one using the &ldquo;+ New&rdquo; button.</p>
+        <p className="text-sm mt-1">
+          Create your first one using the &ldquo;+ New&rdquo; button.
+        </p>
       </div>
     );
   }

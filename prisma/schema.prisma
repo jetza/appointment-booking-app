@@ -11,9 +11,10 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  appointments Appointment[]
+  id             String          @id @default(cuid())
+  email          String          @unique
+  appointments   Appointment[]
+  recurringRules RecurringRule[]
 }
 
 model Appointment {
@@ -25,4 +26,28 @@ model Appointment {
   createdById String
 
   createdBy User @relation(fields: [createdById], references: [id])
+}
+
+model RecurringRule {
+  id          String    @id @default(cuid())
+  title       String
+  customer    String
+  durationMin Int
+  dayOfWeek   Int
+  startsOn    DateTime
+  endsOn      DateTime?
+  createdById String
+
+  createdBy     User                  @relation(fields: [createdById], references: [id])
+  cancellations CancelledOccurrence[]
+}
+
+model CancelledOccurrence {
+  id              String @id @default(cuid())
+  recurringRuleId String
+  dateKey         String // YYYY-MM-DD (UTC)
+
+  recurringRule RecurringRule @relation(fields: [recurringRuleId], references: [id], onDelete: Cascade)
+
+  @@unique([recurringRuleId, dateKey])
 }

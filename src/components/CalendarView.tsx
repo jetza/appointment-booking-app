@@ -11,8 +11,18 @@ interface Props {
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 export default function CalendarView({ appointments, onDelete }: Props) {
@@ -21,12 +31,16 @@ export default function CalendarView({ appointments, onDelete }: Props) {
   const [month, setMonth] = useState(today.getMonth()); // 0-indexed
 
   function prevMonth() {
-    if (month === 0) { setYear((y) => y - 1); setMonth(11); }
-    else setMonth((m) => m - 1);
+    if (month === 0) {
+      setYear((y) => y - 1);
+      setMonth(11);
+    } else setMonth((m) => m - 1);
   }
   function nextMonth() {
-    if (month === 11) { setYear((y) => y + 1); setMonth(0); }
-    else setMonth((m) => m + 1);
+    if (month === 11) {
+      setYear((y) => y + 1);
+      setMonth(0);
+    } else setMonth((m) => m + 1);
   }
 
   const firstDay = new Date(year, month, 1).getDay();
@@ -83,7 +97,9 @@ export default function CalendarView({ appointments, onDelete }: Props) {
 
       {/* Day-of-week headers */}
       <div className="grid grid-cols-7 text-center text-xs font-semibold text-zinc-500 mb-1">
-        {DAYS.map((d) => <div key={d}>{d}</div>)}
+        {DAYS.map((d) => (
+          <div key={d}>{d}</div>
+        ))}
       </div>
 
       {/* Calendar grid */}
@@ -104,7 +120,9 @@ export default function CalendarView({ appointments, onDelete }: Props) {
             >
               {day}
               {hasApts && (
-                <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${isToday ? "bg-white" : "bg-blue-500"}`} />
+                <span
+                  className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${isToday ? "bg-white" : "bg-blue-500"}`}
+                />
               )}
             </button>
           );
@@ -116,11 +134,17 @@ export default function CalendarView({ appointments, onDelete }: Props) {
         <div className="mt-4 border-t pt-4">
           <h3 className="font-semibold text-zinc-700 mb-3">{selectedLabel}</h3>
           {selected.length === 0 ? (
-            <p className="text-sm text-zinc-400">No appointments on this day.</p>
+            <p className="text-sm text-zinc-400">
+              No appointments on this day.
+            </p>
           ) : (
             <div className="space-y-3">
               {selected.map((apt) => (
-                <AppointmentCard key={apt.id} appointment={apt} onDelete={onDelete} />
+                <AppointmentCard
+                  key={apt.id}
+                  appointment={apt}
+                  onDelete={onDelete}
+                />
               ))}
             </div>
           )}

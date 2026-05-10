@@ -1,21 +1,53 @@
 import { prisma } from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/auth";
+import { expandRecurringRule } from "@/lib/recurrence";
+import type { AppointmentDTO } from "@/types";
 
 export async function GET() {
   const userId = await getSessionUserId();
-  if (!userId) return Response.json({ error: "Unauthenticated" }, { status: 401 });
+  if (!userId)
+    return Response.json({ error: "Unauthenticated" }, { status: 401 });
 
-  const appointments = await prisma.appointment.findMany({
-    where: { createdById: userId },
-    orderBy: { startsAt: "asc" },
-  });
+  const [appointments, recurringRules] = await Promise.all([
+    prisma.appointment.findMany({
+      where: { createdById: userId },
+      orderBy: { startsAt: "asc" },
+    }),
+    prisma.recurringRule.findMany({
+      where: { createdById: userId },
+      include: { cancellations: true },
+    }),
+  ]);
 
-  return Response.json(appointments);
+  // Expand recurring rules within a rolling window
+  const windowStart = new Date();
+  windowStart.setMonth(windowStart.getMonth() - 3);
+  const windowEnd = new Date();
+  windowEnd.setFullYear(windowEnd.getFullYear() + 1);
+
+  const dtos: AppointmentDTO[] = [
+    ...appointments.map((a) => ({
+      id: a.id,
+      title: a.title,
+      startsAt: a.startsAt.toISOString(),
+      endsAt: a.endsAt.toISOString(),
+      customer: a.customer,
+      createdById: a.createdById,
+      isRecurring: false as const,
+    })),
+    ...recurringRules.flatMap((rule) =>
+      expandRecurringRule(rule, windowStart, windowEnd)
+    ),
+  ];
+
+  dtos.sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+  return Response.json(dtos);
 }
 
 export async function POST(request: Request) {
   const userId = await getSessionUserId();
-  if (!userId) return Response.json({ error: "Unauthenticated" }, { status: 401 });
+  if (!userId)
+    return Response.json({ error: "Unauthenticated" }, { status: 401 });
 
   const body = await request.json().catch(() => null);
   if (
@@ -35,9 +67,37 @@ export async function POST(request: Request) {
     return Response.json({ error: "Invalid date values" }, { status: 400 });
   }
   if (endsAt <= startsAt) {
-    return Response.json({ error: "endsAt must be after startsAt" }, { status: 400 });
+    return Response.json(
+      { error: "endsAt must be after startsAt" },
+      { status: 400 }
+    );
   }
 
+  // Recurring series
+  if (body.recurring === true) {
+    const durationMin = Math.round(
+      (endsAt.getTime() - startsAt.getTime()) / 60000
+    );
+    const endsOn =
+      body.endsOn && typeof body.endsOn === "string"
+        ? new Date(body.endsOn)
+        : null;
+
+    const rule = await prisma.recurringRule.create({
+      data: {
+        title: body.title.trim(),
+        customer: body.customer.trim(),
+        durationMin,
+        dayOfWeek: startsAt.getDay(),
+        startsOn: startsAt,
+        endsOn,
+        createdById: userId,
+      },
+    });
+    return Response.json(rule, { status: 201 });
+  }
+
+  // One-time appointment
   const appointment = await prisma.appointment.create({
     data: {
       title: body.title.trim(),
@@ -50,3 +110,4 @@ export async function POST(request: Request) {
 
   return Response.json(appointment, { status: 201 });
 }
+
